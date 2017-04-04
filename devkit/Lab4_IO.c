@@ -48,7 +48,7 @@ int get_node_stat(int *nodecount, int **num_in_links, int **num_out_links){
         return 1;
     }
     fscanf(ip, "%d\n", nodecount);
-    //fscanf(ip, "%d\n", &Ecount);
+
     (*num_in_links) = malloc((*nodecount) * sizeof(int)); 
     (*num_out_links) = malloc((*nodecount) * sizeof(int)); 
     for (i = 0; i < (*nodecount); ++i){
@@ -71,13 +71,7 @@ int node_init(struct node **nodehead, int *num_in_links, int *num_out_links, int
 
     (*nodehead) = malloc((end - start) * sizeof(struct node));
     index = malloc((end - start) * sizeof(int));
-    // // evaluate the extended in-link count
-    // for ( i = 0; i < nodecount; ++i)
-    //     if (num_out_links[i] == 0)
-    //         ++non_out_count;
-    // for ( i = 0; i < nodecount; ++i)
-    //     num_in_links[i] += non_out_count;
-    // create the nodes
+
     for ( i = start; i < end; ++i){
         (*nodehead)[i - start].num_in_links = num_in_links[i];
         (*nodehead)[i - start].num_out_links = num_out_links[i];
@@ -95,14 +89,7 @@ int node_init(struct node **nodehead, int *num_in_links, int *num_out_links, int
         if (dst >= start && dst < end)
             (*nodehead)[dst - start].inlinks[index[dst - start]++] = src;
     }
-    // // deal with nodes with no outlinks, for those nodes, add a outlink for every node (including itself)
-    // for (i = 0; i < nodecount; ++i)
-    //     if (num_out_links[i] == 0){
-    //         num_out_links[i] = nodecount;
-    //         (*nodehead)[i].num_out_links = nodecount;
-    //         for (j = 0; j< nodecount; ++j)
-    //             (*nodehead)[j].inlinks[index[j]++] = i;
-    //     }
+
     free(index);
     fclose(ip);
     return 0;

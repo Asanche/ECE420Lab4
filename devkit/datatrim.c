@@ -47,7 +47,7 @@ http://snap.stanford.edu/data/web-Stanford.html
 int main (int argc, char* argv[]){
     int option;
     int b_extend = 1;
-    char *INPATH = "web-Stanford.txt";
+    char *INPATH = "devkit/web-Stanford.txt";
     char *OUTPATH = "data_input";
     int BOUND = 5300, src, dst;
     FILE *fp_ori, *fp_dest;
