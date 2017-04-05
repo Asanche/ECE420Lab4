@@ -57,7 +57,7 @@ if [ ! -f $mainEX ]; then
 	exit
 fi
 cp $mainEX tmp/
-cp web-Stanford.txt tmp/
+cp devkit/web-Stanford.txt tmp/
 
 cd tmp/
 ## calculation
