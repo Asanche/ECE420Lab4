@@ -29,9 +29,6 @@
 
 int main (int argc, char* argv[])
 {
-    MPI_Init(&argc, &argv);
-    printf("Hi\n");
-    MPI_Finalize();
     struct node *nodehead;
     int nodecount;
     int *num_in_links, *num_out_links;
@@ -43,7 +40,14 @@ int main (int argc, char* argv[])
     double *collected_r;
     double cst_addapted_threshold;
     double error;
+    int npes, rank;
     FILE *fp;
+
+    MPI_Init(&argc, &argv);
+    MPI_Comm_size(MPI_COMM_WORLD, &npes);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+    printf("Hello from process %d out of %d\n", rank, npes);
 
     // Load the data and simple verification
     if ((fp = fopen("data_output", "r")) == NULL) {
@@ -94,6 +98,7 @@ int main (int argc, char* argv[])
     } while (rel_error(r, r_pre, nodecount) >= EPSILON);
 
     // post processing
+    MPI_Finalize();
     node_destroy(nodehead, nodecount);
     free(num_in_links); free(num_out_links);
     return 0;
