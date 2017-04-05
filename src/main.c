@@ -40,7 +40,7 @@ int main (int argc, char* argv[])
     double *collected_r;
     double cst_addapted_threshold;
     double error;
-    int npes, rank;
+    int npes, rank, threadNodeNumber;
     FILE *fp;
 
     MPI_Init(&argc, &argv);
@@ -67,7 +67,9 @@ int main (int argc, char* argv[])
 
     collected_r = malloc(collected_nodecount * sizeof(double));
 
-    for (i = 0; i < collected_nodecount; ++i)
+    threadNodeNumber = collected_nodecount / npes;
+
+    for (i = rank*threadNodeNumber; i < ((rank + 1) * threadNodeNumber); ++i)
         fscanf(fp, "%lf\n", &collected_r[i]);
     fclose(fp);
 
