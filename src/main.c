@@ -84,15 +84,16 @@ int main (int argc, char* argv[])
                 local_r[i] += r_pre[nodehead[i+processNodeStart].inlinks[j]] / num_out_links[nodehead[i+processNodeStart].inlinks[j]];
             local_r[i] *= DAMPING_FACTOR;
             local_r[i] += damp_const;
+            printf("Thread: %i  locali: %i  local_r: %i", rank, i, local_r[i]);
         }
 
         MPI_Gather(local_r, localnodecount, MPI_DOUBLE, r, localnodecount, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         
-        Lab4_saveoutput(r, nodecount, 0);
-        
+
     } while (rel_error(r, r_pre, nodecount) >= EPSILON);
 
     // post processing
+    Lab4_saveoutput(r, nodecount, 0);
     MPI_Finalize();
     node_destroy(nodehead, nodecount);
     free(num_in_links); free(num_out_links);
