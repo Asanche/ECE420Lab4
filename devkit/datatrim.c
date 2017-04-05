@@ -47,7 +47,7 @@ http://snap.stanford.edu/data/web-Stanford.html
 int main (int argc, char** argv){
     int option;
     int b_extend = 1;
-    char *INPATH = "devkit/web-Stanford.txt";
+    char *INPATH = "./devkit/web-Stanford.txt";
     char *OUTPATH = "data_input";
     int BOUND = 5300, src, dst;
     FILE *fp_ori, *fp_dest;
@@ -67,7 +67,7 @@ int main (int argc, char** argv){
             case '?': return -1;
         }
     if ((fp_ori = fopen(INPATH,"r")) == NULL){
-        printf("Fail to open the source data file. %s \n", INPATH);
+        printf("Fail to open the source data file. \n";
         return -2;
     }  
     if ((fp_dest = fopen(OUTPATH,"w")) == NULL){
