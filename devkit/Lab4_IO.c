@@ -79,7 +79,7 @@ int node_init(struct node **nodehead, int *num_in_links, int *num_out_links, int
         index[i - start] = 0;
     }
     if ((ip = fopen("data_input","r")) == NULL) {
-        printf("Error opening the input file.\n");
+        printf("Error not opening the input file.\n");
         return 1;
     }
     fscanf(ip, "%d\n", &i);

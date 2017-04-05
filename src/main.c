@@ -47,7 +47,7 @@ int main (int argc, char* argv[])
     MPI_Comm_size(MPI_COMM_WORLD, &npes);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    printf("Hello process %d out of %d\n", rank, npes);
+    printf("Hello from process %d out of %d\n", rank, npes);
 
 
     localnodecount = nodecount / npes;
