@@ -47,7 +47,7 @@ int main (int argc, char* argv[])
     MPI_Comm_size(MPI_COMM_WORLD, &npes);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    printf("Hello from process %d out of %d\n", rank, npes);
+    printf("Hello process %d out of %d\n", rank, npes);
 
 
     localnodecount = nodecount / npes;
@@ -87,7 +87,7 @@ int main (int argc, char* argv[])
         }
 
         MPI_Gather(local_r, localnodecount, MPI_DOUBLE, r, localnodecount, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-        
+
     } while (rel_error(r, r_pre, nodecount) >= EPSILON);
 
     // post processing
