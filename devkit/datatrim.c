@@ -44,7 +44,7 @@ http://snap.stanford.edu/data/web-Stanford.html
 #include <unistd.h>
 #include <string.h>
 
-int main (int argc, char* argv[]){
+int main (int argc, char** argv){
     int option;
     int b_extend = 1;
     char *INPATH = "devkit/web-Stanford.txt";
