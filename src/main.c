@@ -36,12 +36,12 @@ int main (int argc, char* argv[])
     int i, j;
     double damp_const;
     int iterationcount = 0;
-    int collected_nodecount;
-    double *collected_r;
-    double cst_addapted_threshold;
-    double error;
-    int npes, rank, nodesPerProcess, processNodeStart, processNodeEnd;
-    FILE *fp;
+    //int collected_nodecount;
+    //double *collected_r;
+    //double cst_addapted_threshold;
+    //double error;
+    int npes, rank, localnodecount, processNodeStart, processNodeEnd;
+    //FILE *fp;
 
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &npes);
@@ -50,18 +50,19 @@ int main (int argc, char* argv[])
     printf("Hello from process %d out of %d\n", rank, npes);
 
 
-    nodesPerProcess = nodecount / npes;
-    processNodeStart = rank * nodesPerProcess;
-    processNodeEnd = processNodeStart + nodesPerProcess;
+    localnodecount = nodecount / npes;
+    processNodeStart = rank * localnodecount;
+    //processNodeEnd = processNodeStart + localnodecount;
 
     // Adjust the threshold according to the problem size
-    cst_addapted_threshold = THRESHOLD;
+    //cst_addapted_threshold = THRESHOLD;
     
     // Calculate the result
     if (node_init(&nodehead, num_in_links, num_out_links, 0, nodecount)) return 254;
 
     r = malloc(nodecount * sizeof(double));
     r_pre = malloc(nodecount * sizeof(double));
+    local_r = malloc(localnodecount * sizeof(double));
 
     for (i = 0; i < nodecount; ++i)
         r[i] = 1.0 / nodecount;
@@ -75,9 +76,9 @@ int main (int argc, char* argv[])
         vec_cp(r, r_pre, nodecount);
 
         //Splits the array to each process
-        MPI_Scatter(r, nodesPerProcess, MPI_DOUBLE, local_r, nodesPerProcess, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Scatter(r, localnodecount, MPI_DOUBLE, local_r, localnodecount, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         
-        for (i = 0; i < nodesPerProcess; ++i) {
+        for (i = 0; i < localnodecount; ++i) {
             local_r[i] = 0;
             for (j = 0; j < nodehead[i+processNodeStart].num_in_links; ++j)
                 local_r[i] += r_pre[nodehead[i+processNodeStart].inlinks[j]] / num_out_links[nodehead[i+processNodeStart].inlinks[j]];
@@ -85,7 +86,7 @@ int main (int argc, char* argv[])
             local_r[i] += damp_const;
         }
 
-        MPI_Gather(local_r, nodesPerProcess, MPI_DOUBLE, r, nodesPerProcess, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Gather(local_r, localnodecount, MPI_DOUBLE, r, localnodecount, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
     } while (rel_error(r, r_pre, nodecount) >= EPSILON);
 
@@ -95,20 +96,4 @@ int main (int argc, char* argv[])
     node_destroy(nodehead, nodecount);
     free(num_in_links); free(num_out_links);
     return 0;
-}
-
-void splitList(double* r, double* local_r, int start, int end){
-    int size = end - start;
-
-    for (int i = 0; i < size; i++){
-        local_r[i] = r[start+i];
-    }
-}
-
-void appendList(double* r, double* local_r, int start, int end){
-    int size = end - start;
-
-    for (int i = 0; i < size; i++){
-        r[start+i] = local_r[i];
-    }
 }
