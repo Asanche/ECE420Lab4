@@ -67,7 +67,7 @@ int main (int argc, char** argv){
             case '?': return -1;
         }
     if ((fp_ori = fopen(INPATH,"r")) == NULL){
-        printf("Fail to open the source data file. \n");
+        printf("Fail to open the source data file. %s \n", INPATH);
         return -2;
     }  
     if ((fp_dest = fopen(OUTPATH,"w")) == NULL){
