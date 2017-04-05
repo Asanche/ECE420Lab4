@@ -111,8 +111,7 @@ double rel_error(double *r, double *t, int size){
         norm_diff += (r[i] - t[i]) * (r[i] - t[i]);
         norm_vec += t[i] * t[i];
     }
-    return 1;
-    //return sqrt(norm_diff)/sqrt(norm_vec);
+    return sqrt(norm_diff)/sqrt(norm_vec);
 }
 
 int vec_cp(double *r, double *t, int size){
