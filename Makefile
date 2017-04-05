@@ -1,7 +1,7 @@
 all: clean main datatrim serialtester
 
 clean:
-	rm -rf main.exe serialtester.exe datatrim.exe
+	rm -rf main serialtester datatrim
 
 main: 
 	mpicc -g -Wall -std=c99 -lm src/main.c devkit/Lab4_IO.c -o main
