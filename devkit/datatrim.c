@@ -57,8 +57,9 @@ int main (int argc, char** argv){
     int Noncount = 0;
     int i,j;
     char* tempstore;
+    option = getopt(argc, argv, "b:i:o:n");
 
-    while ((option = getopt(argc, argv, "b:i:o:n")) != -1)
+    while (option != -1)
         switch(option){
             case 'b': BOUND = strtol(optarg, NULL, 10); break;
             case 'i': INPATH = optarg; break;
@@ -66,6 +67,7 @@ int main (int argc, char** argv){
             case 'n': b_extend = 0; break;
             case '?': return -1;
         }
+        option = getopt(argc, argv, "b:i:o:n");
     if ((fp_ori = fopen(INPATH,"r")) == NULL){
         printf("Fail to open the source data file. \n");
         return -2;
