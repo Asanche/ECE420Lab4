@@ -58,6 +58,7 @@ int main (int argc, char* argv[])
     //cst_addapted_threshold = THRESHOLD;
     
     // Calculate the result
+    if (get_node_stat(&nodecount, &num_in_links, &num_out_links)) return 254;
     if (node_init(&nodehead, num_in_links, num_out_links, 0, nodecount)) return 254;
 
     r = malloc(nodecount * sizeof(double));
