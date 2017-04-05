@@ -69,7 +69,7 @@ int main (int argc, char* argv[])
 
     damp_const = (1.0 - DAMPING_FACTOR) / nodecount;
 
-    
+    Lab4_saveoutput(r, nodecount, 0);
     // CORE CALCULATION
     do {
         ++iterationcount;
@@ -91,7 +91,6 @@ int main (int argc, char* argv[])
     } while (rel_error(r, r_pre, nodecount) >= EPSILON);
 
     // post processing
-    Lab4_saveoutput(r, nodecount, 0);
     MPI_Finalize();
     node_destroy(nodehead, nodecount);
     free(num_in_links); free(num_out_links);
