@@ -87,7 +87,7 @@ int main (int argc, char* argv[])
         }
 
         MPI_Gather(local_r, localnodecount, MPI_DOUBLE, r, localnodecount, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-
+        
     } while (rel_error(r, r_pre, nodecount) >= EPSILON);
 
     // post processing
