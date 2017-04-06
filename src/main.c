@@ -21,6 +21,7 @@
 #include <math.h>
 #include "mpi.h"
 #include "../devkit/Lab4_IO.h"
+#include "./devkit/timer.h"
 
 #define EPSILON 0.00001
 #define DAMPING_FACTOR 0.85
@@ -36,6 +37,7 @@ int main (int argc, char* argv[])
     int i, j;
     double damp_const;
     int iterationcount = 0;
+    double start, end;
     //int collected_nodecount;
     //double *collected_r;
     //double cst_addapted_threshold;
@@ -76,6 +78,7 @@ int main (int argc, char* argv[])
     damp_const = (1.0 - DAMPING_FACTOR) / nodecount;
 
     // CORE CALCULATION
+    GET_TIME(start);
     do {
         ++iterationcount;
 
@@ -105,10 +108,10 @@ int main (int argc, char* argv[])
         
 
     } while (rel_error(r, r_pre, nodecount) >= EPSILON);
-
+    GET_TIME(end);
     //rel_error(r, r_pre, nodecount) >= EPSILON
     // post processing
-    Lab4_saveoutput(r, nodecount, 0);
+    Lab4_saveoutput(r, nodecount, end-start);
     MPI_Finalize();
     node_destroy(nodehead, nodecount);
     free(num_in_links); free(num_out_links);
