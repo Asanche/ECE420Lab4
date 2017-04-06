@@ -44,10 +44,6 @@ int main (int argc, char* argv[])
     MPI_Comm_size(MPI_COMM_WORLD, &npes);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    printf("Hello from process %d out of %d\n", rank, npes);
-
-
-
     // Adjust the threshold according to the problem size
     //cst_addapted_threshold = THRESHOLD;
     
@@ -71,8 +67,9 @@ int main (int argc, char* argv[])
 
     damp_const = (1.0 - DAMPING_FACTOR) / nodecount;
 
-    // CORE CALCULATION
     GET_TIME(start);
+
+    // CORE CALCULATION
     do {
         ++iterationcount;
 
@@ -85,7 +82,6 @@ int main (int argc, char* argv[])
         //Splits the array to each process
         MPI_Scatter(r, localnodecount, MPI_DOUBLE, local_r, localnodecount, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         
-
         for (i = 0; i < localnodecount; i++) {
             if ( (rank == 0) && (i%10==0)){
                 printf("i:%i    local_r[i]:%f\n", i, local_r[i]);
@@ -98,11 +94,10 @@ int main (int argc, char* argv[])
         }
 
         MPI_Allgather(local_r, localnodecount, MPI_DOUBLE, r, localnodecount, MPI_DOUBLE, MPI_COMM_WORLD);
-        
-
     } while (rel_error(r, r_pre, nodecount) >= EPSILON);
+
     GET_TIME(end);
-    //rel_error(r, r_pre, nodecount) >= EPSILON
+
     // post processing
     Lab4_saveoutput(r, nodecount, end-start);
     MPI_Finalize();
