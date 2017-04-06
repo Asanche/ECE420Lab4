@@ -21,7 +21,7 @@
 #include <math.h>
 #include "mpi.h"
 #include "../devkit/Lab4_IO.h"
-#include "./devkit/timer.h"
+#include "../devkit/timer.h"
 
 #define EPSILON 0.00001
 #define DAMPING_FACTOR 0.85
