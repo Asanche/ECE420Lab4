@@ -67,9 +67,13 @@ int main (int argc, char* argv[])
             r[i] = 1.0 / nodecount;
         }
     }
-    printf("Before Thread: %i    r[0]: %d\n", rank, r[0]);
-    MPI_Bcast(r, nodecount, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-    printf("After Thread: %i    r[0]: %d\n", rank, r[0]);
+    
+    r_pre = malloc(nodecount * sizeof(double));
+    vec_cp(r, r_pre, nodecount);
+
+    printf("Before Thread: %i    r_pre[0]: %d\n", rank, r[0]);
+    MPI_Bcast(r_pre, nodecount, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    printf("After Thread: %i    r_pre[0]: %d\n", rank, r[0]);
 
     localnodecount = nodecount / npes;
     processNodeStart = rank * localnodecount;
