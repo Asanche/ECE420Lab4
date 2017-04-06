@@ -70,6 +70,7 @@ int main (int argc, char* argv[])
 
     damp_const = (1.0 - DAMPING_FACTOR) / nodecount;
 
+    printf("Thread: %i  start: %i  size: %i\n", rank, processNodeStart, localnodecount);
     // CORE CALCULATION
     do {
         ++iterationcount;
@@ -84,7 +85,6 @@ int main (int argc, char* argv[])
                 local_r[i] += r_pre[nodehead[i+processNodeStart].inlinks[j]] / num_out_links[nodehead[i+processNodeStart].inlinks[j]];
             local_r[i] *= DAMPING_FACTOR;
             local_r[i] += damp_const;
-            printf("Thread: %i  locali: %i  local_r: %i", rank, i, local_r[i]);
         }
 
         MPI_Gather(local_r, localnodecount, MPI_DOUBLE, r, localnodecount, MPI_DOUBLE, 0, MPI_COMM_WORLD);
