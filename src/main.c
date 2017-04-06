@@ -58,20 +58,20 @@ int main (int argc, char* argv[])
     if (get_node_stat(&nodecount, &num_in_links, &num_out_links)) return 254;
     if (node_init(&nodehead, num_in_links, num_out_links, 0, nodecount)) return 254;
 
+    localnodecount = nodecount / npes;
+    processNodeStart = rank * localnodecount;
+    //processNodeEnd = processNodeStart + localnodecount;
+
     r = malloc(nodecount * sizeof(double));
     r_pre = malloc(nodecount * sizeof(double));
     local_r = malloc(localnodecount * sizeof(double));
 
-    localnodecount = nodecount / npes;
-    processNodeStart = rank * localnodecount;
-    //processNodeEnd = processNodeStart + localnodecount;
 
     for (i = 0; i < nodecount; ++i)
         r[i] = 1.0 / nodecount;
 
     damp_const = (1.0 - DAMPING_FACTOR) / nodecount;
 
-    printf("Thread: %i  start: %i  size: %i\n", rank, processNodeStart, localnodecount);
     // CORE CALCULATION
     do {
         ++iterationcount;
