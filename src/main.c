@@ -63,16 +63,15 @@ int main (int argc, char* argv[])
     processNodeStart = rank * localnodecount;
     //processNodeEnd = processNodeStart + localnodecount;
 
-    if (rank == 0){
-        r = malloc(nodecount * sizeof(double));
+    r = malloc(nodecount * sizeof(double));
+    r_pre = malloc(nodecount * sizeof(double));
+    local_r = malloc(localnodecount * sizeof(double));
 
+    if (rank == 0){
         for (i = 0; i < nodecount; ++i){
             r[i] = 1.0 / nodecount;
         }
     }
-
-    r_pre = malloc(nodecount * sizeof(double));
-    local_r = malloc(localnodecount * sizeof(double));
 
     damp_const = (1.0 - DAMPING_FACTOR) / nodecount;
 
@@ -87,7 +86,7 @@ int main (int argc, char* argv[])
         MPI_Bcast(r_pre, nodecount, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
         //Splits the array to each process
-        //MPI_Scatter(r, localnodecount, MPI_DOUBLE, local_r, localnodecount, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Scatter(r, localnodecount, MPI_DOUBLE, local_r, localnodecount, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         
 
         for (i = 0; i < localnodecount; i++) {
@@ -102,11 +101,12 @@ int main (int argc, char* argv[])
             local_r[i] += damp_const;
         }
 
-        //MPI_Gather(local_r, localnodecount, MPI_DOUBLE, r, localnodecount, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Allgather(local_r, localnodecount, MPI_DOUBLE, r, localnodecount, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         
 
-    } while (rel_error(r, r_pre, nodecount) >= EPSILON);
+    } while (false);
 
+    //rel_error(r, r_pre, nodecount) >= EPSILON
     // post processing
     Lab4_saveoutput(r, nodecount, 0);
     MPI_Finalize();
