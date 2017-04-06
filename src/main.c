@@ -101,7 +101,7 @@ int main (int argc, char* argv[])
             local_r[i] += damp_const;
         }
 
-        MPI_Allgather(local_r, localnodecount, MPI_DOUBLE, r, localnodecount, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Allgather(local_r, localnodecount, MPI_DOUBLE, r, localnodecount, MPI_DOUBLE, MPI_COMM_WORLD);
         
 
     } while (0);
