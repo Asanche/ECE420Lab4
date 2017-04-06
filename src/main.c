@@ -20,8 +20,8 @@
 #include <stdlib.h>
 #include <math.h>
 #include "mpi.h"
-#include "../devkit/Lab4_IO.h"
-#include "../devkit/timer.h"
+#include "../Lab4_IO.h"
+#include "../timer.h"
 
 #define EPSILON 0.00001
 #define DAMPING_FACTOR 0.85
@@ -83,9 +83,6 @@ int main (int argc, char* argv[])
         MPI_Scatter(r, localnodecount, MPI_DOUBLE, local_r, localnodecount, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         
         for (i = 0; i < localnodecount; i++) {
-            if ( (rank == 0) && (i%10==0)){
-                printf("i:%i    local_r[i]:%f\n", i, local_r[i]);
-            }
             local_r[i] = 0;
             for (j = 0; j < nodehead[i+processNodeStart].num_in_links; ++j)
                 local_r[i] += r_pre[nodehead[i+processNodeStart].inlinks[j]] / num_out_links[nodehead[i+processNodeStart].inlinks[j]];
@@ -99,7 +96,9 @@ int main (int argc, char* argv[])
     GET_TIME(end);
 
     // post processing
-    Lab4_saveoutput(r, nodecount, end-start);
+	if (rank == 0){
+   		Lab4_saveoutput(r, nodecount, end-start);
+	}
     MPI_Finalize();
     node_destroy(nodehead, nodecount);
     free(num_in_links); free(num_out_links);
