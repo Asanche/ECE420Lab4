@@ -21,6 +21,8 @@
 #include <math.h>
 #include "mpi.h"
 #include "../devkit/Lab4_IO.h"
+#include "../devkit/timer.h"
+
 
 #define EPSILON 0.00001
 #define DAMPING_FACTOR 0.85
@@ -32,81 +34,73 @@ int main (int argc, char* argv[])
     struct node *nodehead;
     int nodecount;
     int *num_in_links, *num_out_links;
-    double *r, *r_pre, *local_r;
-    int i, j;
+    double *r, *r_pre;
     double damp_const;
     int iterationcount = 0;
-    //int collected_nodecount;
-    //double *collected_r;
-    //double cst_addapted_threshold;
-    //double error;
-    int npes, rank, localnodecount, processNodeStart, processNodeEnd;
-    //FILE *fp;
+    int collected_nodecount;
+    double *collected_r;
+    double cst_addapted_threshold;
+    // double error;
+    int npes, rank;
+    double start, end;
 
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &npes);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    printf("Hello from process %d out of %d\n", rank, npes);
-
-
-
     // Adjust the threshold according to the problem size
-    //cst_addapted_threshold = THRESHOLD;
-    
-    // Calculate the result
+    cst_addapted_threshold = THRESHOLD;
 
     if (get_node_stat(&nodecount, &num_in_links, &num_out_links)) return 254;
-    if (node_init(&nodehead, num_in_links, num_out_links, 0, nodecount)) return 254;
+    
+    collected_nodecount = nodecount / npes;
 
-    localnodecount = nodecount / npes;
-    processNodeStart = rank * localnodecount;
-    //processNodeEnd = processNodeStart + localnodecount;
-
+    // Calculate the result
+    if (node_init(&nodehead, num_in_links, num_out_links, nodecount * (rank / npes), ((rank + 1) / npes))) return 254;
+    
     r = malloc(nodecount * sizeof(double));
     r_pre = malloc(nodecount * sizeof(double));
-    local_r = malloc(localnodecount * sizeof(double));
+    collected_r = malloc(collected_nodecount * sizeof(double));
 
-    if (rank == 0){
-        for (i = 0; i < nodecount; ++i){
-            r[i] = 1.0 / nodecount;
-        }
+    for (int i = 0; i < nodecount; ++i) {
+        r[i] = 1.0 / nodecount;
     }
 
     damp_const = (1.0 - DAMPING_FACTOR) / nodecount;
 
+    printf("Hello from process %d out of %d. We have %d nodes\n", rank, npes, collected_nodecount);
+    
+    GET_TIME(start)
+
     // CORE CALCULATION
     do {
         ++iterationcount;
+        printf("Process %d, iteration %d\n", rank, iterationcount);
+        vec_cp(r, r_pre, nodecount);
+        for (int i = 0; i < collected_nodecount; ++i) {
+            printf("IDK WTF rank: %d, i: %d \n", rank, i);
+            collected_r[i] = 0;
+            for (int j = 0; j < nodehead[i].num_in_links; ++j) {
+                printf("HELP ME rank: %d, j: %d \n", rank, j);
+                collected_r[i] += r_pre[nodehead[i].inlinks[j]] / num_out_links[nodehead[i].inlinks[j]];
+            }
+            printf("collected_r before, rank: %d, %d: %f \n", rank, i, collected_r[i]);
 
-        if (rank == 0){
-            vec_cp(r, r_pre, nodecount);
+            collected_r[i] *= DAMPING_FACTOR;
+            collected_r[i] += damp_const;
+
+            printf("collected_r after, rank: %d, %d: %f \n", rank, i, collected_r[i]);
         }
 
-        MPI_Bcast(r_pre, nodecount, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        printf("Allgather!\n");
+        MPI_Allgather(collected_r, collected_nodecount, MPI_DOUBLE, r, collected_nodecount, MPI_DOUBLE, MPI_COMM_WORLD);
+    } while (rel_error(r, r_pre, nodecount) >= EPSILON);
 
-        //Splits the array to each process
-        MPI_Scatter(r, localnodecount, MPI_DOUBLE, local_r, localnodecount, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-        
+    GET_TIME(end);
+    printf("End Timing\n");
 
-        for (i = 0; i < localnodecount; i++) {
-            //printf("Thread: %i  i: %i    local_r[i]:%i\n", rank, i, local_r[i]);
-            /*if ( (rank == 0) && (i%10==0)){
-                printf("i:%i    local_r[i]:%i", i, local_r[i]);
-            }*/
-            local_r[i] = 0;
-            for (j = 0; j < nodehead[i+processNodeStart].num_in_links; ++j)
-                local_r[i] += r_pre[nodehead[i+processNodeStart].inlinks[j]] / num_out_links[nodehead[i+processNodeStart].inlinks[j]];
-            local_r[i] *= DAMPING_FACTOR;
-            local_r[i] += damp_const;
-        }
+    printf("Calculation Time: %f\n", (end - start));
 
-        MPI_Allgather(local_r, localnodecount, MPI_DOUBLE, r, localnodecount, MPI_DOUBLE, MPI_COMM_WORLD);
-        
-
-    } while (0);
-
-    //rel_error(r, r_pre, nodecount) >= EPSILON
     // post processing
     Lab4_saveoutput(r, nodecount, 0);
     MPI_Finalize();
