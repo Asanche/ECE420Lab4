@@ -83,11 +83,11 @@ int main (int argc, char* argv[])
         if (rank == 0){
             vec_cp(r, r_pre, nodecount);
         }
-        
+
         MPI_Bcast(r_pre, nodecount, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
         //Splits the array to each process
-        MPI_Scatter(r, localnodecount, MPI_DOUBLE, local_r, localnodecount, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        //MPI_Scatter(r, localnodecount, MPI_DOUBLE, local_r, localnodecount, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         
 
         for (i = 0; i < localnodecount; i++) {
@@ -102,7 +102,7 @@ int main (int argc, char* argv[])
             local_r[i] += damp_const;
         }
 
-        MPI_Gather(local_r, localnodecount, MPI_DOUBLE, r, localnodecount, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        //MPI_Gather(local_r, localnodecount, MPI_DOUBLE, r, localnodecount, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         
 
     } while (rel_error(r, r_pre, nodecount) >= EPSILON);
