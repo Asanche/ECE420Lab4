@@ -81,7 +81,7 @@ int main (int argc, char* argv[])
         MPI_Scatter(r, localnodecount, MPI_DOUBLE, local_r, localnodecount, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         
         for (i = 0; i < localnodecount; ++i) {
-            
+            printf("Thread: %i  i: %i    local_r[i]:%i", rank, i, local_r[i]);
             if ( (rank = 0) && (i%10==0)){
                 printf("i:%i    local_r[i]:%i", i, local_r[i]);
             }
