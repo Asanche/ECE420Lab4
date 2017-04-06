@@ -81,6 +81,10 @@ int main (int argc, char* argv[])
         MPI_Scatter(r, localnodecount, MPI_DOUBLE, local_r, localnodecount, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         
         for (i = 0; i < localnodecount; ++i) {
+            
+            if ( rank = 0 && (i%10==0)){
+                printf("i:%i    local_r[i]:%i", i, local_r[i]);
+            }
             local_r[i] = 0;
             for (j = 0; j < nodehead[i+processNodeStart].num_in_links; ++j)
                 local_r[i] += r_pre[nodehead[i+processNodeStart].inlinks[j]] / num_out_links[nodehead[i+processNodeStart].inlinks[j]];
