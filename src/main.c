@@ -92,7 +92,7 @@ int main (int argc, char* argv[])
         for (i = 0; i < localnodecount; i++) {
             //printf("Thread: %i  i: %i    local_r[i]:%i\n", rank, i, local_r[i]);
             if ( (rank == 0) && (i%10==0)){
-                printf("i:%i    local_r[i]:%i", i, local_r[i]);
+                printf("i:%i    local_r[i]:%i\n", i, local_r[i]);
             }
             local_r[i] = 0;
             for (j = 0; j < nodehead[i+processNodeStart].num_in_links; ++j)
