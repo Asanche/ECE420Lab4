@@ -55,20 +55,30 @@ int main (int argc, char* argv[])
     //cst_addapted_threshold = THRESHOLD;
     
     // Calculate the result
-    if (get_node_stat(&nodecount, &num_in_links, &num_out_links)) return 254;
-    if (node_init(&nodehead, num_in_links, num_out_links, 0, nodecount)) return 254;
+    if (rank == 0){
+
+        if (get_node_stat(&nodecount, &num_in_links, &num_out_links)) return 254;
+        if (node_init(&nodehead, num_in_links, num_out_links, 0, nodecount)) return 254;
+
+        r = malloc(nodecount * sizeof(double));
+        r_pre = malloc(nodecount * sizeof(double));
+
+        for (i = 0; i < nodecount; ++i){
+            r[i] = 1.0 / nodecount;
+        }
+    }
+    printf("Before Thread: %i    r[0]: %d\n", rank, r[0]);
+    MPI_Bcast(r, nodecount, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    printf("After Thread: %i    r[0]: %d\n", rank, r[0]);
 
     localnodecount = nodecount / npes;
     processNodeStart = rank * localnodecount;
     //processNodeEnd = processNodeStart + localnodecount;
 
-    r = malloc(nodecount * sizeof(double));
-    r_pre = malloc(nodecount * sizeof(double));
     local_r = malloc(localnodecount * sizeof(double));
 
 
-    for (i = 0; i < nodecount; ++i)
-        r[i] = 1.0 / nodecount;
+
 
     damp_const = (1.0 - DAMPING_FACTOR) / nodecount;
 
@@ -80,11 +90,11 @@ int main (int argc, char* argv[])
         //Splits the array to each process
         MPI_Scatter(r, localnodecount, MPI_DOUBLE, local_r, localnodecount, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         
-        for (i = 0; i < localnodecount; ++i) {
-            printf("Thread: %i  i: %i    local_r[i]:%i\n", rank, i, local_r[i]);
-            if ( (rank = 0) && (i%10==0)){
+        for (i = 0; i < localnodecount; i++) {
+            //printf("Thread: %i  i: %i    local_r[i]:%i\n", rank, i, local_r[i]);
+            /*if ( (rank == 0) && (i%10==0)){
                 printf("i:%i    local_r[i]:%i", i, local_r[i]);
-            }
+            }*/
             local_r[i] = 0;
             for (j = 0; j < nodehead[i+processNodeStart].num_in_links; ++j)
                 local_r[i] += r_pre[nodehead[i+processNodeStart].inlinks[j]] / num_out_links[nodehead[i+processNodeStart].inlinks[j]];
