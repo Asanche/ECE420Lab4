@@ -104,7 +104,7 @@ int main (int argc, char* argv[])
         MPI_Allgather(local_r, localnodecount, MPI_DOUBLE, r, localnodecount, MPI_DOUBLE, MPI_COMM_WORLD);
         
 
-    } while (0);
+    } while (rel_error(r, r_pre, nodecount) >= EPSILON);
 
     //rel_error(r, r_pre, nodecount) >= EPSILON
     // post processing
