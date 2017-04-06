@@ -56,7 +56,7 @@ int main (int argc, char* argv[])
     collected_nodecount = nodecount / npes;
 
     // Calculate the result
-    if (node_init(&nodehead, num_in_links, num_out_links, nodecount * (rank / npes), ((rank + 1) / npes))) return 254;
+    if (node_init(&nodehead, num_in_links, num_out_links, (nodecount * rank) / npes, (nodecount * (rank + 1)) / npes)) return 254;
     
     r = malloc(nodecount * sizeof(double));
     r_pre = malloc(nodecount * sizeof(double));
