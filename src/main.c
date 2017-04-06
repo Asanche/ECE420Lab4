@@ -82,7 +82,7 @@ int main (int argc, char* argv[])
         
         for (i = 0; i < localnodecount; ++i) {
             
-            if ( rank = 0 && (i%10==0)){
+            if ( (rank = 0) && (i%10==0)){
                 printf("i:%i    local_r[i]:%i", i, local_r[i]);
             }
             local_r[i] = 0;
