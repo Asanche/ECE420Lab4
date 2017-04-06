@@ -50,9 +50,6 @@ int main (int argc, char* argv[])
     printf("Hello from process %d out of %d\n", rank, npes);
 
 
-    localnodecount = nodecount / npes;
-    processNodeStart = rank * localnodecount;
-    //processNodeEnd = processNodeStart + localnodecount;
 
     // Adjust the threshold according to the problem size
     //cst_addapted_threshold = THRESHOLD;
@@ -64,6 +61,10 @@ int main (int argc, char* argv[])
     r = malloc(nodecount * sizeof(double));
     r_pre = malloc(nodecount * sizeof(double));
     local_r = malloc(localnodecount * sizeof(double));
+
+    localnodecount = nodecount / npes;
+    processNodeStart = rank * localnodecount;
+    //processNodeEnd = processNodeStart + localnodecount;
 
     for (i = 0; i < nodecount; ++i)
         r[i] = 1.0 / nodecount;
