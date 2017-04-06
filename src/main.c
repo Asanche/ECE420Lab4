@@ -38,12 +38,7 @@ int main (int argc, char* argv[])
     double damp_const;
     int iterationcount = 0;
     double start, end;
-    //int collected_nodecount;
-    //double *collected_r;
-    //double cst_addapted_threshold;
-    //double error;
-    int npes, rank, localnodecount, processNodeStart, processNodeEnd;
-    //FILE *fp;
+    int npes, rank, localnodecount, processNodeStart;
 
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &npes);
@@ -63,7 +58,6 @@ int main (int argc, char* argv[])
 
     localnodecount = nodecount / npes;
     processNodeStart = rank * localnodecount;
-    //processNodeEnd = processNodeStart + localnodecount;
 
     r = malloc(nodecount * sizeof(double));
     r_pre = malloc(nodecount * sizeof(double));
@@ -93,9 +87,8 @@ int main (int argc, char* argv[])
         
 
         for (i = 0; i < localnodecount; i++) {
-            //printf("Thread: %i  i: %i    local_r[i]:%i\n", rank, i, local_r[i]);
             if ( (rank == 0) && (i%10==0)){
-                printf("i:%i    local_r[i]:%i\n", i, local_r[i]);
+                printf("i:%i    local_r[i]:%f\n", i, local_r[i]);
             }
             local_r[i] = 0;
             for (j = 0; j < nodehead[i+processNodeStart].num_in_links; ++j)
